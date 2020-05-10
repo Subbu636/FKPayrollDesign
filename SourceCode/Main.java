@@ -14,11 +14,16 @@ public class Main{
 		Payroll pr = new Payroll(0);
 		int id1 = pr.add_employee("emp1", "work by hour", true, "Account", 10);
 		int id2 = pr.add_employee("emp2", "flat salary", false, "Mail", 3000);
+		int id3 = pr.add_employee("emp3", "commission", false, "Mail", 300);
 
-		pr.delete_employee(id2);
 
-		pr.de_bug(id1);
-		pr.de_bug(id2);
+		// pr.de_bug(id1);
+		// pr.de_bug(id2);
+
+		// System.out.println();
+
+		System.out.println(pr.post_time_card(id1, 10));
+		System.out.println(pr.post_sales_reciept(id3, 40));
 
 	}
 }

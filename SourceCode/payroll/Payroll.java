@@ -11,7 +11,7 @@ class Employee{
 	int id, start_date;
 	String name;
 	boolean is_union_member;
-	public String payment_type;
+	String payment_type;
 	double salary_per_unit;
 
 	Employee(int id,String name,boolean is_union_member,String payment_type,double salary_per_unit,int start_date){
@@ -22,13 +22,6 @@ class Employee{
 		this.salary_per_unit = salary_per_unit;
 		this.start_date = start_date;
 	}
-
-	double payroll(int day_count){
-
-		return 0.0;
-	}
-
-
 }
 
 class Work_by_hour extends Employee{
@@ -51,7 +44,6 @@ class Work_by_hour extends Employee{
 
 	double payroll(int day_count){
 
-		System.out.println(payment_frequency);
 		return 0.0;
 	}
 }
@@ -66,7 +58,6 @@ class Flat_salary extends Employee{
 
 	double payroll(int day_count){
 
-		System.out.println(payment_frequency);
 		return 0.0;
 	}
 }
@@ -83,7 +74,6 @@ class Commission_payment extends Employee{
 
 	double payroll(int day_count){
 
-		System.out.println(payment_frequency);
 		return 0.0;
 	}
 }
@@ -123,7 +113,7 @@ public class Payroll{
 			type_matching.put(id, salary_type);
 			// System.out.println("Employee "+name+" successfully added");
 		}
-		else if(salary_type.equals("Commission")){
+		else if(salary_type.equals("commission")){
 			Employee emp = new Commission_payment(id, name, is_union_member, payment_type, salary_per_unit,day_count);
 			employees.put(id, emp);
 			type_matching.put(id, salary_type);
@@ -154,13 +144,46 @@ public class Payroll{
 
 	}
 
+	public int post_time_card(int id, int work_hours){
+
+		if (employees.containsKey(id) && type_matching.get(id).equals("work by hour")){
+			Work_by_hour emp = (Work_by_hour)employees.get(id);
+			if (work_hours > 8){
+				emp.normal_hrs += 8;
+				emp.extra_hrs += (work_hours-8);
+			}
+			else{
+				emp.normal_hrs += work_hours;
+			}
+			System.out.println("Time card added successfully");
+			return emp.normal_hrs + emp.extra_hrs;
+		}
+		else{
+			System.out.println("Not appliacable or no id");
+			return -1;
+		}
+	}
+
+	public int post_sales_reciept(int id, int sales_count){
+
+		if (employees.containsKey(id) && type_matching.get(id).equals("commission")){
+			Commission_payment emp = (Commission_payment)employees.get(id);
+			emp.sales_count += sales_count;
+			System.out.println("Sales reciept added successfully");
+			return emp.sales_count;
+		}
+		else{
+			System.out.println("Not appliacable or no id");
+			return -1;
+		}
+	}
+
 	public void de_bug(int id){
 
 		if (employees.containsKey(id)){
 			Employee e1 = employees.get(id);
 			System.out.println(e1.payment_type);
 			System.out.println(e1.is_union_member);
-			e1.payroll(0);
 		}
 		else{
 			System.out.println("No Such id");
