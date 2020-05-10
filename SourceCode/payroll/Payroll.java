@@ -23,6 +23,11 @@ class Employee{
 		this.start_date = start_date;
 	}
 
+	double payroll(int day_count){
+
+		return 0.0;
+	}
+
 
 }
 
@@ -46,6 +51,7 @@ class Work_by_hour extends Employee{
 
 	double payroll(int day_count){
 
+		System.out.println(payment_frequency);
 		return 0.0;
 	}
 }
@@ -60,6 +66,7 @@ class Flat_salary extends Employee{
 
 	double payroll(int day_count){
 
+		System.out.println(payment_frequency);
 		return 0.0;
 	}
 }
@@ -76,6 +83,7 @@ class Commission_payment extends Employee{
 
 	double payroll(int day_count){
 
+		System.out.println(payment_frequency);
 		return 0.0;
 	}
 }
@@ -107,26 +115,43 @@ public class Payroll{
 			Employee emp = new Work_by_hour(id, name, is_union_member, payment_type, salary_per_unit,day_count);
 			employees.put(id, emp);
 			type_matching.put(id, salary_type);
-			System.out.println("Employee "+name+" successfully added");
+			// System.out.println("Employee "+name+" successfully added");
 		}
 		else if(salary_type.equals("flat salary")){
 			Employee emp = new Flat_salary(id, name, is_union_member, payment_type, salary_per_unit,day_count);
 			employees.put(id, emp);
 			type_matching.put(id, salary_type);
-			System.out.println("Employee "+name+" successfully added");
+			// System.out.println("Employee "+name+" successfully added");
 		}
 		else if(salary_type.equals("Commission")){
 			Employee emp = new Commission_payment(id, name, is_union_member, payment_type, salary_per_unit,day_count);
 			employees.put(id, emp);
 			type_matching.put(id, salary_type);
-			System.out.println("Employee "+name+" successfully added");
+			// System.out.println("Employee "+name+" successfully added");
 		}
 		else{
 			avail_id -= 1;
 			id = -1;
-			System.out.println("No such salary type");
+			// System.out.println("No such salary type");
 		}
 		return id;
+	}
+
+	public int delete_employee(int id){
+
+		if (employees.containsKey(id)){
+			Employee emp = employees.get(id);
+			emp = null;
+			employees.remove(id);
+			type_matching.remove(id);
+			// System.out.println("Deleted "+id+" Successfully");
+			return id;
+		}
+		else{
+			// System.out.println(id + " Not present");
+			return -1;
+		}
+
 	}
 
 	public void de_bug(int id){
@@ -135,6 +160,7 @@ public class Payroll{
 			Employee e1 = employees.get(id);
 			System.out.println(e1.payment_type);
 			System.out.println(e1.is_union_member);
+			e1.payroll(0);
 		}
 		else{
 			System.out.println("No Such id");
