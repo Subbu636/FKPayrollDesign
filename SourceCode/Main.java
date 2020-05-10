@@ -22,8 +22,18 @@ public class Main{
 
 		// System.out.println();
 
-		System.out.println(pr.post_time_card(id1, 10));
-		System.out.println(pr.post_sales_reciept(id3, 40));
+		// System.out.println(pr.post_time_card(id1, 10));
+		// System.out.println(pr.post_sales_reciept(id3, 40));
+
+		pr.add_service_charge(id1, 15);
+		pr.add_union_membership(id3);
+		System.out.println(pr.get_salary_per_unit(id2));
+		pr.alter_salary_per_unit(id2, 5000);
+		System.out.println(pr.get_salary_per_unit(id2));
+		System.out.println(pr.get_payment_mode(id3));
+		pr.alter_payment_mode(id3, "by hand");
+		System.out.println(pr.get_payment_mode(id3));
+
 
 	}
 }
