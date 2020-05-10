@@ -23,6 +23,10 @@ class Employee{
 		this.start_date = start_date;
 		service_charges = 0;
 	}
+
+	double payroll(int day_count){
+		return -1.0;
+	}
 }
 
 class Work_by_hour extends Employee{
@@ -38,14 +42,27 @@ class Work_by_hour extends Employee{
 		extra_hrs = 0;
 	}
 
-	// double view_payroll(int day_count){
-
-	// 	return 0.0;
-	// }
-
 	double payroll(int day_count){
 
-		return 0.0;
+		double sum = -1.0;
+		if ((day_count - start_date + 1)%payment_frequency == 0){
+			sum = (double)normal_hrs*salary_per_unit + (double)extra_hrs*salary_per_unit*extra_hour_factor;
+			if (sum > service_charges){
+				sum -= (service_charges);
+				service_charges = 0;
+			}
+			else{
+				sum = 0.0;
+				service_charges = service_charges - sum;
+			}
+			normal_hrs = 0;
+			extra_hrs = 0;
+			// System.out.println("Payment processed:"+id);
+		}
+		else{
+			// System.out.println(((day_count - start_date + 1)%payment_frequency) +" days till payment:"+id);
+		}
+		return sum;
 	}
 }
 
@@ -59,7 +76,23 @@ class Flat_salary extends Employee{
 
 	double payroll(int day_count){
 
-		return 0.0;
+		double sum = -1.0;
+		if ((day_count - start_date + 1)%payment_frequency == 0){
+			sum = salary_per_unit;
+			if (sum > service_charges){
+				sum -= (service_charges);
+				service_charges = 0;
+			}
+			else{
+				sum = 0.0;
+				service_charges = service_charges - sum;
+			}
+			// System.out.println("Payment processed:"+id);
+		}
+		else{
+			// System.out.println(((day_count - start_date + 1)%payment_frequency) +" days till payment:"+id);
+		}
+		return sum;
 	}
 }
 
@@ -75,7 +108,24 @@ class Commission_payment extends Employee{
 
 	double payroll(int day_count){
 
-		return 0.0;
+		double sum = -1.0;
+		if ((day_count - start_date + 1)%payment_frequency == 0){
+			sum = (double)sales_count*salary_per_unit;
+			if (sum > service_charges){
+				sum -= (service_charges);
+				service_charges = 0;
+			}
+			else{
+				sum = 0.0;
+				service_charges = service_charges - sum;
+			}
+			sales_count = 0;
+			// System.out.println("Payment processed:"+id);
+		}
+		else{
+			// System.out.println(((day_count - start_date + 1)%payment_frequency) +" days till payment:"+id);
+		}
+		return sum;
 	}
 }
 
@@ -201,11 +251,11 @@ public class Payroll{
 		if (employees.containsKey(id) && employees.get(id).is_union_member){
 			Employee emp = employees.get(id);
 			emp.service_charges += amount;
-			System.out.println("Service Charges added:"+id);
+			// System.out.println("Service Charges added:"+id);
 			return emp.service_charges;
 		}
 		else{
-			System.out.println("Not a union member or invalid id:"+id);
+			// System.out.println("Not a union member or invalid id:"+id);
 			return -1;
 		}
 	}
@@ -215,11 +265,11 @@ public class Payroll{
 		if(employees.containsKey(id)){
 			Employee emp = employees.get(id);
 			emp.salary_per_unit = new_rate;
-			System.out.println("Changed salary rate:"+id);
+			// System.out.println("Changed salary rate:"+id);
 			return 1;
 		}
 		else{
-			System.out.println("invalid id:"+id);
+			// System.out.println("invalid id:"+id);
 			return -1;
 		}
 	}
@@ -229,13 +279,34 @@ public class Payroll{
 		if(employees.containsKey(id)){
 			Employee emp = employees.get(id);
 			emp.payment_mode = new_mode;
-			System.out.println("Changed payment mode:"+id);
+			// System.out.println("Changed payment mode:"+id);
 			return 1;
 		}
 		else{
-			System.out.println("invalid id:"+id);
+			// System.out.println("invalid id:"+id);
 			return -1;
 		}
+	}
+
+	public double process_payroll(int id){
+
+		if (employees.containsKey(id)){
+			Employee emp = employees.get(id);
+			return emp.payroll(day_count);
+		}
+		else{
+			// System.out.println("invalid id");
+			return -1.0;
+		}
+	}
+
+	public HashMap<Integer,Double> process_payroll_all(){
+		HashMap <Integer,Double> pay = new HashMap<>();
+		for (Map.Entry val : employees.entrySet()){
+			Employee emp = (Employee)val.getValue();
+			pay.put((Integer)val.getKey(),emp.payroll(day_count));
+		}
+		return pay;
 	}
 
 	public void de_bug(int id){ // debugggggggggging
