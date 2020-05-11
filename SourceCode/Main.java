@@ -4,6 +4,7 @@ import java.util.*;
 import java.io.*;
 import payroll.*;
 import org.json.simple.*;
+import org.json.simple.parser.*;
 
 // Feature testing file
 
@@ -14,16 +15,18 @@ public class Main{
 		System.out.println("Starting");
 
 
-		
-		// Payroll pr = new Payroll(0);
+		Payroll pr = new Payroll();
 		// int id1 = pr.add_employee("emp1", "work by hour", true, "Account", 10,0,15);
 		// int id2 = pr.add_employee("emp2", "flat salary", true, "Mail", 10000,50,100);
 		// int id3 = pr.add_employee("emp3", "flat salary", false, "Hand", 6000,50,0);
 		// int id4 = pr.add_employee("emp4", "work by hour", false, "Mail", 20,0,0);
 
+		// pr.update_json("payroll_data.json");
 
-		// pr.de_bug(id1);
-		// pr.de_bug(id2);
+		pr.load_json("payroll_data.json");
+		// pr.de_bug(1);
+		// pr.de_bug(4);
+		
 
 		// System.out.println();
 
@@ -48,24 +51,24 @@ public class Main{
 
 
 
-		// pr.add_service_charge(id1,25);
-		// pr.add_service_charge(id3, 50);
-		// pr.add_service_charge(id2, 100);
-		// pr.add_service_charge(id4, 30);
-		// for(int i = 1;i < 29;i++){
-		// 	System.out.println("Day:"+i);
-		// 	pr.post_time_card(id1,9);
-		// 	pr.post_time_card(id4,8);
-		// 	pr.post_sales_reciept(id2, 5);
-		// 	pr.post_sales_reciept(id3,10);
+		pr.add_service_charge(1,25);
+		pr.add_service_charge(3, 50);
+		pr.add_service_charge(2, 100);
+		pr.add_service_charge(4, 30);
+		for(int i = 1;i < 29;i++){
+			System.out.println("Day:"+i);
+			pr.post_time_card(1,9);
+			pr.post_time_card(4,8);
+			pr.post_sales_reciept(2, 5);
+			pr.post_sales_reciept(3,10);
 
-		// 	HashMap<Integer,Double> map = pr.process_payroll_all();
-		// 	// System.out.println(map);
-		// 	pr.de_bug(id1);
+			HashMap<Integer,Double> map = pr.process_payroll_all();
+			System.out.println(map);
+			// pr.de_bug(id1);
 
-		// 	pr.increment_day();
+			pr.increment_day();
 
-		// }
+		}
 
 
 

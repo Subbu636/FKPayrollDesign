@@ -5,9 +5,8 @@ package payroll;
 // imports
 import java.util.*;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import org.json.simple.*;
+import org.json.simple.parser.*;
 
 class Employee{
 
@@ -132,9 +131,9 @@ public class Payroll{
 	private int avail_id = 0;
 	private int day_count = 1;
 
-	public Payroll(int day_count){
+	public Payroll(){
 
-		this.day_count = day_count;
+		this.day_count = 0;
 		employees = new HashMap<>();
 		type_matching = new HashMap<>();
 	}
@@ -182,6 +181,105 @@ public class Payroll{
 			// System.out.println("Not present:"+id);
 			return -1;
 		}
+
+	}
+
+	public void load_json(String file_name){
+
+		JSONParser jsonParser = new JSONParser();
+		try{
+
+			FileReader fileReader = new FileReader(file_name);
+			JSONObject employees_json = (JSONObject) jsonParser.parse(fileReader);
+			day_count = Integer.parseInt((String)employees_json.get("last_update"));
+			JSONArray arr = (JSONArray)employees_json.get("employees");
+			for (int i = 0;i < arr.size();i++){
+				JSONObject jo = (JSONObject) arr.get(i);
+				int id = Integer.parseInt((String)jo.get("id"));
+				int start_date = Integer.parseInt((String)jo.get("start_date"));
+				int sales_count = Integer.parseInt((String)jo.get("sales_count"));
+				int commission_frequency = Integer.parseInt((String)jo.get("commission_frequency"));
+				int last_collection = Integer.parseInt((String)jo.get("last_collection"));
+				String name = (String)jo.get("name");
+				String payment_mode = (String)jo.get("payment_mode");
+				String salary_type = (String)jo.get("salary_type");
+				double salary_per_unit = Double.parseDouble((String)jo.get("salary_per_unit"));
+				double service_charges = Double.parseDouble((String)jo.get("service_charges"));
+				double commission_rate = Double.parseDouble((String)jo.get("commission_rate"));
+				double weekly_dues = Double.parseDouble((String)jo.get("weekly_dues"));
+				boolean is_union_member = Boolean.parseBoolean(((String)jo.get("is_union_member")));
+				if (salary_type.equals("work by hour")){
+					int normal_hrs = Integer.parseInt((String)jo.get("normal_hrs"));
+					int extra_hrs = Integer.parseInt((String)jo.get("extra_hrs"));
+					Work_by_hour emp = new Work_by_hour(id, name, is_union_member, payment_mode, salary_per_unit,day_count,commission_rate,weekly_dues);
+					emp.normal_hrs = normal_hrs;
+					emp.extra_hrs = extra_hrs;
+					employees.put(id, emp);
+					type_matching.put(id, salary_type);
+					// System.out.println("Employee "+name+" successfully added");
+				}
+				else if(salary_type.equals("flat salary")){
+					Employee emp = new Flat_salary(id, name, is_union_member, payment_mode, salary_per_unit,day_count,commission_rate,weekly_dues);
+					employees.put(id, emp);
+					type_matching.put(id, salary_type);
+					// System.out.println("Employee "+name+" successfully added");
+				}
+			}
+		}
+		catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	    } 
+	    catch (IOException e) {
+	        e.printStackTrace();
+	    } 
+	    catch (ParseException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void update_json(String file_name){
+
+		JSONObject employees_json = new JSONObject();
+		employees_json.put("project","Payroll");
+		employees_json.put("last_update",Integer.toString(day_count));
+		JSONArray arr = new JSONArray();
+		for (Map.Entry val : employees.entrySet()){
+			Employee emp = (Employee)val.getValue();
+			int emp_id = (int)val.getKey();
+			JSONObject jo = new JSONObject();
+			jo.put("id",Integer.toString(emp_id));
+			jo.put("name",emp.name);
+			jo.put("is_union_member",Boolean.toString(emp.is_union_member));
+			jo.put("start_date",Integer.toString(emp.start_date));
+			jo.put("sales_count",Integer.toString(emp.sales_count));
+			jo.put("commission_frequency",Integer.toString(emp.commission_frequency));
+			jo.put("last_collection",Integer.toString(emp.last_collection));
+			jo.put("payment_mode",emp.payment_mode);
+			jo.put("salary_per_unit",Double.toString(emp.salary_per_unit));
+			jo.put("service_charges",Double.toString(emp.service_charges));
+			jo.put("commission_rate",Double.toString(emp.commission_rate));
+			jo.put("weekly_dues",Double.toString(emp.weekly_dues));
+			if(type_matching.get(emp_id).equals("work by hour")){
+				Work_by_hour wh = (Work_by_hour)emp;
+				jo.put("normal_hrs",Integer.toString(wh.normal_hrs));
+				jo.put("extra_hrs", Integer.toString(wh.extra_hrs));
+				jo.put("salary_type","work by hour");
+			}
+			else{
+				jo.put("salary_type","flat salary");
+			}
+			arr.add(jo);
+		}
+		employees_json.put("employees",arr);
+
+		try (FileWriter file = new FileWriter(file_name)) {
+ 
+            file.write(employees_json.toString());
+            file.flush();
+ 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 	}
 
@@ -317,8 +415,8 @@ public class Payroll{
 
 		if (employees.containsKey(id)){
 			Employee emp = employees.get(id);
-			// System.out.println(emp.name);
-			System.out.println(emp.service_charges);
+			System.out.println(emp.name);
+			System.out.println(emp.payment_mode);
 			System.out.println(emp.last_collection);
 		}
 		else{
